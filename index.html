@@ -1,0 +1,1235 @@
+!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Prevención y Análisis de Estafas Digitales</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        accent: {
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            indigo: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles for Responsive Chart Containers */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .tab-active {
+            border-bottom: 3px solid #2563eb;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+        /* Clases de Animación JS */
+        .reveal-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: opacity, transform;
+        }
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+
+<!-- Chosen Palette: Warm Neutral Slate background (#F8FAFC) paired with Deep Navy (#0F172A) headers, Vibrant Trust Blue (#2563EB) accents, and Amber/Rose status indicators. -->
+
+<!-- Application Structure Plan:
+    1. Navigation Bar: Sticky header with rapid jump links and emergency helpline shortcut.
+    2. Hero & Impact Dashboard: Overview of digital fraud stats in Mexico (6M cases, $11.3B MXN losses, demographics shift) with Chart.js visualizations.
+    3. Ingeniería Social & Psicología: Interactive explorer of cognitive exploitation principles (Urgencia, Autoridad, Reciprocidad, etc.) with real-world scam scenarios.
+    4. Catálogo de Amenazas & Vectores: Filterable database of scam modalities (Phishing/Vishing/Smishing, Pharming, E-commerce/Paquete Fantasma, Cripto/Ponzi, Deepfakes, SIM Swapping, Montadeudas, FaaS).
+    5. Blindaje Técnico y Marco Legal: Explanations of SPF/DKIM/DMARC, FIDO2, SPEI-CEP verification tool guide, SCJN legal precedents, and LFPDPPP rights.
+    6. Asistente Interactivo de Diagnóstico y Denuncia: Interactive Decision Wizard ("¿Qué hacer si sospechas o fuiste víctima?") + National Helpline Directory (089, 088, CONDUSEF, Policía Cibernética).
+    7. Evaluador de Madurez Digital (Quiz): Interactive 5-question test to evaluate user vulnerability and provide custom security advice.
+-->
+
+<!-- Visualization & Content Choices:
+    - Demographic Impact: Chart.js Bar Chart showing claims growth by age group to debunk the elder-only victim myth.
+    - E-Commerce Chargeback Trends: Chart.js Line Chart displaying transaction volume vs chargeback capital commitment from 2019 to 2023.
+    - Security Protocols Status: Chart.js Donut Chart illustrating SPF/DKIM/DMARC adoption gap in Mexican financial institutions.
+    - Interactive Threat Filters: Dynamic JS filter for scam typologies (Commercial, Identity, Financial, Technical).
+    - Emergency Wizard: Interactive step-by-step decision tree using JS state for immediate incident response.
+    - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visual markers use standard Unicode icons and styled CSS elements.
+-->
+
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl drop-shadow-sm">🛡️</span>
+                <div>
+                    <span class="font-extrabold text-slate-900 text-lg sm:text-xl tracking-tight block leading-none">CiberSeguridad MX</span>
+                    <span class="text-xs text-slate-500 font-medium">Prevención e Inteligencia Contra Estafas</span>
+                </div>
+            </div>
+            
+            <nav class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-slate-600">
+                <a href="#panorama" class="hover:text-brand-600 transition">Panorama</a>
+                <a href="#psicologia" class="hover:text-brand-600 transition">Ingeniería Social</a>
+                <a href="#amenazas" class="hover:text-brand-600 transition">Catálogo de Amenazas</a>
+                <a href="#tecnica" class="hover:text-brand-600 transition">Protección Técnica y Legal</a>
+                <a href="#asistente" class="hover:text-brand-600 transition">Asistente de Respuesta</a>
+                <a href="#test" class="hover:text-brand-600 transition">Evaluador</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <a href="#denuncia" class="bg-rose-600 hover:bg-rose-700 text-white px-3 sm:px-4 py-2 rounded-sm text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition flex items-center space-x-2">
+                    <span>🚨</span>
+                    <span>Línea Directa 089 / 088</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+
+        <!-- SECTION 1: PANORAMA & ESTADÍSTICAS -->
+        <section id="panorama" class="scroll-mt-20 space-y-8">
+            <!-- Section Intro -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-brand-900 rounded-sm p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="max-w-3xl space-y-4 relative z-10">
+                    <div class="inline-flex items-center space-x-2 bg-brand-500/20 text-brand-300 border border-brand-500/30 px-3 py-1 rounded-sm text-xs font-semibold">
+                        <span>📊 Reporte Estadístico México 2024</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        Análisis de Estafas en Internet: Diagnóstico y Estrategia
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        El ciberfraude en México ha evolucionado de ataques artesanales a una industria multimillonaria estructurada mediante <em>Fraude como Servicio (FaaS)</em> e Inteligencia Artificial. Este portal traduce la evidencia estadística, los vectores de ataque y el marco legal en una guía interactiva de protección personal e institucional.
+                    </p>
+                </div>
+                <div class="absolute right-0 bottom-0 opacity-10 text-[180px] select-none font-black pointer-events-none hidden md:block">
+                    🔒
+                </div>
+            </div>
+
+            <!-- Key Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-md transition js-reveal">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Fraudes Cibernéticos (2024)</span>
+                        <span class="text-brand-600 bg-brand-50 p-2 rounded-sm text-lg">📈</span>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-3xl font-extrabold text-slate-900"><span class="js-number" data-target="6.0" data-decimals="1">0</span>M</span>
+                        <span class="text-xs font-bold text-emerald-600 ml-2">↑ +40% vs 2018</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Frente a 2.2M de fraudes tradicionales en el mismo periodo.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-md transition js-reveal">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Impacto Económico Total</span>
+                        <span class="text-rose-600 bg-rose-50 p-2 rounded-sm text-lg">💸</span>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-3xl font-extrabold text-slate-900">+$<span class="js-number" data-target="11300" data-decimals="0">0</span>M</span>
+                        <span class="text-xs font-medium text-slate-500 ml-1">MXN</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Quebranto acumulado en más de 108,000 denuncias procesadas.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-md transition js-reveal">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pérdida Promedio / Incidente</span>
+                        <span class="text-amber-600 bg-amber-50 p-2 rounded-sm text-lg">💳</span>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-3xl font-extrabold text-slate-900">$<span class="js-number" data-target="3525" data-decimals="0">0</span></span>
+                        <span class="text-xs font-medium text-slate-500 ml-1">MXN</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Hasta <strong>$8,750 MXN</strong> en robo de credenciales o transferencias.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-md transition js-reveal">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Concentración en E-Commerce</span>
+                        <span class="text-indigo-600 bg-indigo-50 p-2 rounded-sm text-lg">🛒</span>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-3xl font-extrabold text-slate-900">> <span class="js-number" data-target="92" data-decimals="0">0</span>%</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">De las reclamaciones totales corresponden a compras en línea.</p>
+                </div>
+            </div>
+
+            <!-- Introductory Paragraph for Data Section -->
+            <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm space-y-3">
+                <h2 class="text-xl font-bold text-slate-900">Contexto Demográfico y Comportamiento Transaccional</h2>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Esta sección analiza la evolución del volumen de operaciones en comercio electrónico frente a los contracargos por posible fraude, así como el cambio de paradigma demográfico. Contrario al mito de que las estafas digitales afectan principalmente a adultos mayores con baja alfabetización tecnológica, la evidencia empírica de la CONDUSEF muestra que el mayor incremento de reclamaciones se registra en la población económicamente activa y nativa digital (segmentos de 18 a 59 años) debido a su alta exposición transaccional y uso de banca móvil.
+                </p>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart 1: Demographics -->
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-lg">Incremento de Reclamaciones por Edad</h3>
+                                <p class="text-xs text-slate-500">Porcentaje de crecimiento en denuncias por grupo de edad (Fuente: CONDUSEF)</p>
+                            </div>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-sm">Datos Demográficos</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="demographicsChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4 border-t pt-3">
+                        📌 <strong>Conclusión:</strong> Los nativos digitales y la población económicamente activa (40-59 años) experimentan el mayor crecimiento de ataques debido al uso intensivo de la banca móvil y redes sociales.
+                    </p>
+                </div>
+
+                <!-- Chart 2: Chargeback Trends -->
+                <div class="bg-white p-6 rounded-sm border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-lg">Evolución de Compras y Contracargos (2019 - 2023)</h3>
+                                <p class="text-xs text-slate-500">Monto total autorizado vs Contracargos por reclamos (Millones de MXN)</p>
+                            </div>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-sm">E-Commerce MX</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chargebackChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4 border-t pt-3">
+                        📌 <strong>Conclusión:</strong> Aunque el % relativo de contracargos se mantiene en ~0.50%, el volumen absoluto superó los <strong>$3,360 M MXN</strong> en 2023 por la expansión exponencial del comercio remoto.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 2: INGENIERÍA SOCIAL Y PSICOLOGÍA -->
+        <section id="psicologia" class="scroll-mt-20 space-y-8">
+            <div class="bg-white p-6 sm:p-8 rounded-sm border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-sm text-xs font-semibold mb-2">
+                        <span>🧠 La Psicología del Engaño</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Principios de Manipulación en Ingeniería Social</h2>
+                    <p class="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
+                        Los ciberataques modernos raras veces rompen la criptografía por fuerza bruta; explotan vulnerabilidades cognitivas humanas. Comprender los detonantes emocionales utilizados por los delincuentes es la primera línea de defensa para bloquear la manipulación antes de realizar transferencias o revelar credenciales.
+                    </p>
+                </div>
+
+                <!-- Interactive Principle Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Selector Sidebar -->
+                    <div class="md:col-span-1 space-y-2">
+                        <button onclick="selectPrinciple('urgencia')" id="btn-urgencia" class="principle-btn w-full text-left p-4 rounded-sm border hover:border-cyan-400 transition font-medium flex items-center justify-between border-cyan-300 bg-cyan-100/60 backdrop-blur-md text-cyan-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]">
+                            <div class="flex items-center space-x-3">
+                                <span>⚠️</span>
+                                <span class="text-sm font-bold">Urgencia y Escasez</span>
+                            </div>
+                            <span class="text-xs">➔</span>
+                        </button>
+
+                        <button onclick="selectPrinciple('autoridad')" id="btn-autoridad" class="principle-btn w-full text-left p-4 rounded-sm border border-slate-200 hover:border-cyan-400 transition font-medium flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span>🏛️</span>
+                                <span class="text-sm font-bold">Autoridad Suplantada</span>
+                            </div>
+                            <span class="text-xs">➔</span>
+                        </button>
+
+                        <button onclick="selectPrinciple('reciprocidad')" id="btn-reciprocidad" class="principle-btn w-full text-left p-4 rounded-sm border border-slate-200 hover:border-cyan-400 transition font-medium flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span>🎁</span>
+                                <span class="text-sm font-bold">Reciprocidad Falsa</span>
+                            </div>
+                            <span class="text-xs">➔</span>
+                        </button>
+
+                        <button onclick="selectPrinciple('compromiso')" id="btn-compromiso" class="principle-btn w-full text-left p-4 rounded-sm border border-slate-200 hover:border-cyan-400 transition font-medium flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span>📝</span>
+                                <span class="text-sm font-bold">Compromiso Gradual</span>
+                            </div>
+                            <span class="text-xs">➔</span>
+                        </button>
+
+                        <button onclick="selectPrinciple('simpatia')" id="btn-simpatia" class="principle-btn w-full text-left p-4 rounded-sm border border-slate-200 hover:border-cyan-400 transition font-medium flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span>🤝</span>
+                                <span class="text-sm font-bold">Simpatía y Confianza</span>
+                            </div>
+                            <span class="text-xs">➔</span>
+                        </button>
+                    </div>
+
+                    <!-- Principle Detail Panel -->
+                    <div class="md:col-span-2 bg-slate-50 p-6 rounded-sm border border-slate-200 flex flex-col justify-between" id="principle-detail-box">
+                        <!-- Dynamic Content Inserted via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 3: CATÁLOGO DE AMENAZAS Y VECTORES -->
+        <section id="amenazas" class="scroll-mt-20 space-y-8">
+            <div class="space-y-4">
+                <div class="inline-flex items-center space-x-2 bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-sm text-xs font-semibold">
+                    <span>🔬 Tipologías de Alta Prevalencia</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Catálogo Interactivo de Vectores de Ataque</h2>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                    Explore las modalidades de fraude más extendidas en el ecosistema digital. Utilice los filtros para navegar entre técnicas de suplantación, fraudes comerciales, esquemas de inversión y amenazas avanzadas impulsadas por Inteligencia Artificial o fallas de infraestructura.
+                </p>
+            </div>
+
+            <!-- Threat Category Filters -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+                <button onclick="filterThreats('all')" class="threat-filter-btn px-4 py-2 rounded-sm text-xs sm:text-sm font-bold border border-cyan-300 bg-cyan-100/60 backdrop-blur-md text-cyan-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]">Todos los Vectores</button>
+                <button onclick="filterThreats('suplantacion')" class="threat-filter-btn px-4 py-2 rounded-sm text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Suplantación (Phishing/Vishing)</button>
+                <button onclick="filterThreats('comercio')" class="threat-filter-btn px-4 py-2 rounded-sm text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Comercio y Logística</button>
+                <button onclick="filterThreats('financiero')" class="threat-filter-btn px-4 py-2 rounded-sm text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Inversión y Ponzi</button>
+                <button onclick="filterThreats('avanzado')" class="threat-filter-btn px-4 py-2 rounded-sm text-xs sm:text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">Sistemático / IA (Deepfakes, SIM Swapping)</button>
+            </div>
+
+            <!-- Threat Grid Container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="threats-grid">
+                <!-- Grid Items dynamically rendered via JS -->
+            </div>
+        </section>
+
+
+        <!-- SECTION 4: BLINDAJE TÉCNICO Y MARCO LEGAL -->
+        <section id="tecnica" class="scroll-mt-20 space-y-8">
+            <div class="space-y-4">
+                <div class="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-sm text-xs font-semibold">
+                    <span>🛡 Infraestructura y Derechos</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Protección Técnica, Criptografía y Marco Legal</h2>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                    La defensa efectiva combina protocolos corporativos de seguridad criptográfica con el conocimiento pleno de las resoluciones de la Suprema Corte de Justicia (SCJN) y la legislación de protección de datos (LFPDPPP).
+                </p>
+            </div>
+
+            <!-- Two Column Layout: Tech vs Legal -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Tech Protocols Card -->
+                <div class="bg-white p-6 sm:p-8 rounded-sm border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-900 flex items-center space-x-2">
+                            <span>🔑</span>
+                            <span>Estándares Técnicos Antifraude</span>
+                        </h3>
+                        <span class="text-xs font-semibold bg-emerald-100 text-emerald-800 px-2 py-1 rounded-sm">Infraestructura</span>
+                    </div>
+
+                    <!-- Interactive Protocol Accordion/Tabs -->
+                    <div class="space-y-4">
+                        <div class="border border-slate-200 rounded-sm p-4 hover:border-brand-300 transition">
+                            <div class="flex justify-between items-center font-bold text-slate-900 text-sm sm:text-base">
+                                <span>Tríada de Correo: SPF, DKIM y DMARC</span>
+                                <span class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-sm border border-brand-200">DNS Anti-Spoofing</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Evita que los criminales envíen correos fingiendo ser dominio de tu banco. SPF valida servidores autorizados, DKIM firma digitalmente el mensaje y DMARC instruye rechazar mensajes no autenticados (`p=reject`).
+                            </p>
+                            <div class="mt-3 p-3 bg-slate-50 rounded-sm text-xs text-slate-700">
+                                ⚠️ <strong>Dato en México:</strong> El 42% de los bancos aún carecen de configuraciones DMARC estrictas.
+                            </div>
+                        </div>
+
+                        <div class="border border-slate-200 rounded-sm p-4 hover:border-brand-300 transition">
+                            <div class="flex justify-between items-center font-bold text-slate-900 text-sm sm:text-base">
+                                <span>Autenticación FIDO2 / WebAuthn</span>
+                                <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-sm border border-emerald-200">Sin Contraseñas</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Reemplaza contraseñas estáticas y OTPs por claves criptográficas asimétricas vinculadas al dominio real. Elimina los ataques Man-in-the-Middle y sitios de phishing espejo.
+                            </p>
+                        </div>
+
+                        <div class="border border-slate-200 rounded-sm p-4 hover:border-brand-300 transition">
+                            <div class="flex justify-between items-center font-bold text-slate-900 text-sm sm:text-base">
+                                <span>Comprobante Electrónico de Pago (CEP - SPEI)</span>
+                                <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm border border-indigo-200">Banco de México</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Herramienta irrefutable para verificar si un depósito o transferencia fue liquidado realmente. Ingresando la Clave de Rastreo en el portal de Banxico se obtiene un XML/PDF oficial, desactivando estafas de comprobantes falsos.
+                            </p>
+                        </div>
+
+                        <div class="border border-slate-200 rounded-sm p-4 hover:border-brand-300 transition">
+                            <div class="flex justify-between items-center font-bold text-slate-900 text-sm sm:text-base">
+                                <span>Marco Marco NIST CSF 2.0</span>
+                                <span class="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-sm border border-amber-200">Resiliencia</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                                Marco estratégico corporativo estructurado en 6 funciones: Gobernar, Identificar, Proteger, Detectar, Responder y Recuperar para gestionar riesgos cibernéticos sistemáticos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legal Framework Card -->
+                <div class="bg-white p-6 sm:p-8 rounded-sm border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-slate-900 flex items-center space-x-2">
+                            <span>⚖️</span>
+                            <span>Jurisprudencia y Derechos del Usuario</span>
+                        </h3>
+                        <span class="text-xs font-semibold bg-indigo-100 text-indigo-800 px-2 py-1 rounded-sm">Marco Legal MX</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-sm">Carga de la Prueba en Bancos (SCJN)</span>
+                                <span class="text-[10px] font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-sm">Tesis 1a./J. 17/2021</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                La Primera Sala de la SCJN determinó que en disputas por transferencias SPEI o cargos no reconocidos, <strong>el banco tiene la obligación legal de demostrar la seguridad del sistema</strong>. No basta con acreditar el uso de NIP o Token; si no lo prueba, debe reembolsar el capital e intereses moratorios.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-sm">Responsabilidad de Telefónicas (SIM Swapping)</span>
+                                <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-sm">Precedente SCJN</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                La SCJN estableció responsabilidad civil de las empresas de telefonía por duplicar tarjetas SIM sin la debida verificación de identidad, obligándolas a reparar daños económicos sufridos por el usuario.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-sm">Ley LFPDPPP y Derechos ARCO</span>
+                                <span class="text-[10px] font-bold bg-brand-100 text-brand-800 px-2 py-0.5 rounded-sm">INAI / Privacidad</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tienes derecho al <strong>A</strong>cceso, <strong>R</strong>ectificación, <strong>C</strong>ancelación u <strong>O</strong>posición de tus datos personales. Las empresas deben responder en <strong>máximo 20 días hábiles</strong>. El uso de datos sensibles requiere consentimiento explícito por escrito.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-sm space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-sm">Sanciones Penales a Montadeudas</span>
+                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-sm">Código Penal</span>
+                            </div>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Reformas penales tipifican la cobranza extrajudicial coercitiva, la extorsión mediante apps y el uso de Inteligencia Artificial (deepfakes) con penas de <strong>3 a 9 años de prisión</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 5: ASISTENTE INTERACTIVO DE DIAGNÓSTICO Y RED DE DENUNCIA -->
+        <section id="asistente" class="scroll-mt-20 space-y-8">
+            <div class="bg-gradient-to-br from-slate-900 to-brand-950 rounded-sm p-6 sm:p-10 text-white space-y-8 shadow-xl">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-brand-500/20 text-brand-300 border border-brand-500/30 px-3 py-1 rounded-sm text-xs font-semibold mb-3">
+                        <span>🚨 Protocolo de Respuesta Rápida</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Asistente de Emergencia y Diagnóstico</h2>
+                    <p class="text-slate-300 text-sm sm:text-base mt-2">
+                        ¿Estás enfrentando un evento sospechoso o fuiste víctima de un fraude? Selecciona tu situación para obtener los pasos inmediatos de contención y los canales oficiales de denuncia.
+                    </p>
+                </div>
+
+                <!-- Wizard Interactive Steps -->
+                <div class="bg-white/10 backdrop-blur-md p-6 rounded-sm border border-white/10 space-y-6">
+                    <span class="text-xs font-bold uppercase tracking-wider text-brand-300 block">Paso 1: Selecciona el incidente ocurrido</span>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="wizard-buttons">
+                        <button onclick="runWizard('banco')" class="wizard-btn text-left p-4 rounded-sm bg-white/5 hover:bg-white/15 border border-white/10 transition font-medium text-sm flex flex-col justify-between space-y-3">
+                            <span class="text-2xl">🏦</span>
+                            <span class="font-bold">Cargo no reconocido / SPEI sospechoso</span>
+                        </button>
+                        <button onclick="runWizard('sim')" class="wizard-btn text-left p-4 rounded-sm bg-white/5 hover:bg-white/15 border border-white/10 transition font-medium text-sm flex flex-col justify-between space-y-3">
+                            <span class="text-2xl">📱</span>
+                            <span class="font-bold">Sin señal celular repentina (SIM Swapping)</span>
+                        </button>
+                        <button onclick="runWizard('montadeudas')" class="wizard-btn text-left p-4 rounded-sm bg-white/5 hover:bg-white/15 border border-white/10 transition font-medium text-sm flex flex-col justify-between space-y-3">
+                            <span class="text-2xl">💸</span>
+                            <span class="font-bold">Acoso de App de Préstamo (Montadeudas)</span>
+                        </button>
+                        <button onclick="runWizard('whatsapp')" class="wizard-btn text-left p-4 rounded-sm bg-white/5 hover:bg-white/15 border border-white/10 transition font-medium text-sm flex flex-col justify-between space-y-3">
+                            <span class="text-2xl">💬</span>
+                            <span class="font-bold">WhatsApp / Red Social Hackeada</span>
+                        </button>
+                    </div>
+
+                    <!-- Wizard Output Box -->
+                    <div id="wizard-output" class="bg-white text-slate-800 p-6 rounded-sm border border-slate-200 hidden space-y-4">
+                        <!-- Dynamic Steps Rendered via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Red Nacional de Denuncia Cards -->
+            <div id="denuncia" class="scroll-mt-20 space-y-4">
+                <h3 class="text-xl font-bold text-slate-900">Directorio Oficial de la Red Nacional de Denuncia en México</h3>
+                <p class="text-xs text-slate-500">Contactos institucionales directos para la atención de delitos cibernéticos y conciliación financiera.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-sm border border-slate-200 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-rose-600 text-lg">Línea 089</span>
+                            <span class="text-xs bg-rose-50 text-rose-700 px-2 py-0.5 rounded-sm font-bold">24 / 7</span>
+                        </div>
+                        <p class="font-bold text-slate-900 text-sm">Denuncia Anónima y Extorsión</p>
+                        <p class="text-xs text-slate-500">Operado por el C4/C5 estatal. Útil contra secuestro virtual, cobranza ilegal de montadeudas y extorsión telefónica.</p>
+                        <a href="tel:089" class="block text-center bg-rose-600 text-white text-xs font-bold py-2 rounded-sm hover:bg-rose-700 transition">Llamar al 089</a>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-sm border border-slate-200 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-brand-600 text-lg">Línea 088</span>
+                            <span class="text-xs bg-brand-50 text-brand-700 px-2 py-0.5 rounded-sm font-bold">Guardia Nacional</span>
+                        </div>
+                        <p class="font-bold text-slate-900 text-sm">CERT-MX / Delitos Cibernéticos</p>
+                        <p class="text-xs text-slate-500">Centro de Atención Ciudadana para hackeo corporativo, robo de identidad digital y preservación forense.</p>
+                        <a href="tel:088" class="block text-center bg-brand-600 text-white text-xs font-bold py-2 rounded-sm hover:bg-brand-700 transition">Llamar al 088</a>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-sm border border-slate-200 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-indigo-600 text-lg">CONDUSEF</span>
+                            <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm font-bold">SIPRES</span>
+                        </div>
+                        <p class="font-bold text-slate-900 text-sm">Portal de Fraudes Financieros</p>
+                        <p class="text-xs text-slate-500">Reclamaciones contra bancos y consulta de entidades financieras autorizadas en el SIPRES antes de invertir.</p>
+                        <a href="https://www.condusef.gob.mx" target="_blank" rel="noopener" class="block text-center bg-indigo-600 text-white text-xs font-bold py-2 rounded-sm hover:bg-indigo-700 transition">Visitar CONDUSEF</a>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-sm border border-slate-200 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-emerald-600 text-lg">Pol. Cibernética</span>
+                            <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-sm font-bold">CDMX / Estados</span>
+                        </div>
+                        <p class="font-bold text-slate-900 text-sm">Atención Ciudadana y Doxing</p>
+                        <p class="text-xs text-slate-500">Orientación en directo (CDMX: 55 5242 5100 ext. 5086 | Edomex: 722 275 8333) para bajada de páginas apócrifas.</p>
+                        <a href="tel:5552425100" class="block text-center bg-emerald-600 text-white text-xs font-bold py-2 rounded-sm hover:bg-emerald-700 transition">Contactar Policía</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION 6: EVALUADOR DE MATUREZ DIGITAL (QUIZ) -->
+        <section id="test" class="scroll-mt-20 space-y-8">
+            <div class="bg-white p-6 sm:p-10 rounded-sm border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-sm text-xs font-semibold mb-2">
+                        <span>📝 Autoevaluación Interactiva</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Evaluador de Diagnóstico de Riesgo Digital</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Responde 5 preguntas clave sobre tus hábitos de navegación y seguridad para recibir un diagnóstico personalizado de tu nivel de vulnerabilidad ante estafas.
+                    </p>
+                </div>
+
+                <!-- Quiz Form Container -->
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Dynamic Question Rendering -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-3xl drop-shadow-sm">🛡️</span>
+                    <span class="font-bold text-white text-lg">Plataforma de Prevención de Estafas Digitales</span>
+                </div>
+                <p class="text-xs text-slate-500">Basado en datos de CONDUSEF, SCJN, IFT y marcos internacionales de ciberseguridad (NIST CSF 2.0).</p>
+            </div>
+            <div class="border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
+                Este portal interactivo tiene fines puramente informativos y educativos para el fortalecimiento de la cultura de seguridad digital en México.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Store
+        const principlesData = {
+            urgencia: {
+                title: "Urgencia y Escasez",
+                icon: "⚠️",
+                desc: "Induce un estado de pánico que bloquea el pensamiento analítico reflexivo. La víctima percibe que perderá acceso a sus fondos o enfrentará consecuencias legales si no actúa de forma inmediata.",
+                example: "SMS (Smishing): 'Se ha detectado un cargo retenido de $5,000 MXN en su cuenta. Presione el enlace en los próximos 10 minutos para cancelarlo'.",
+                prevention: "Pausa obligatoria de 5 minutos. Cualquier mensaje que limite el tiempo a minutos es 99% probable que sea un fraude."
+            },
+            autoridad: {
+                title: "Autoridad Suplantada",
+                icon: "🏛️",
+                desc: "Aprovecha la tendencia humana de obedecer ciegamente a figuras de poder o instituciones reconocidas (SAT, Policía, Bancos, Reguladores).",
+                example: "Correo apócrifo del Servicio de Administración Tributaria (SAT) notificando auditorías inminentes o inconsistencias fiscales para forzar la descarga de un archivo infectado con malware.",
+                prevention: "Ninguna autoridad gubernamental ni institución bancaria solicita contraseñas ni transferencias de urgencia por teléfono o correo."
+            },
+            reciprocidad: {
+                title: "Reciprocidad Falsa",
+                icon: "🎁",
+                desc: "Crea un sentido de deuda u obligación ofreciendo ayuda o un servicio aparentemente gratuito y no solicitado, para luego pedir información confidencial a cambio.",
+                example: "Llamada de 'Soporte Técnico' indicando haber detectado un virus en tu computadora y, tras limpiarlo 'gratis', pide contraseñas para configurar la seguridad permanente.",
+                prevention: "Rechazar soporte no solicitado y no instalar programas de acceso remoto (AnyDesk, TeamViewer) bajo instrucción telefónica."
+            },
+            compromiso: {
+                title: "Compromiso y Consistencia",
+                icon: "📝",
+                desc: "Logra que la víctima acepte una petición trivial inicial. Al comprometerse, el individuo se siente presionado a mantener una actitud consistente, cediendo a peticiones progresivamente más dañinas.",
+                example: "Fraudes laborales en redes sociales donde piden rellenar un formulario básico y luego realizar depósitos crecientes para 'habilitar los pagos' de un empleo altamente remunerado.",
+                prevention: "Nunca pagar por trabajar. Cualquier empleo que pida dinero previo para 'equipo' o 'activación' es un fraude."
+            },
+            simpatia: {
+                title: "Simpatía y Confianza",
+                icon: "🤝",
+                desc: "Reduce las defensas del usuario suplantando a personas de su círculo cercano, utilizando cuentas robadas de redes sociales o aplicaciones de mensajería para solicitar favores urgentes.",
+                example: "Mensaje por WhatsApp desde el número de un familiar robado: 'Hola tía, cambié de número, me ocurrió una emergencia médica y necesito una transferencia urgente'.",
+                prevention: "Verificar invariablemente llamando por voz directa al número de teléfono tradicional del familiar conocido."
+            }
+        };
+
+        const threatsData = [
+            {
+                id: "phishing",
+                category: "suplantacion",
+                title: "Phishing / Smishing / Vishing",
+                icon: "🎣",
+                badge: "Muy Alta Prevalencia",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "Tríada de suplantación mediante correos apócrifos, mensajes SMS con acortadores o llamadas de voz donde un delincuente se hace pasar por el banco para obtener tu Token u OTP en tiempo real.",
+                details: "En el Vishing, el criminal simula cancelar un cargo falso mientras tú le dictas los códigos SMS que van llegando a tu teléfono, los cuales él usa para vaciar tu cuenta."
+            },
+            {
+                id: "pharming",
+                category: "suplantacion",
+                title: "Pharming (Redirección Web)",
+                icon: "🌐",
+                badge: "Nivel Técnico Alto",
+                badgeColor: "bg-amber-100 text-amber-800",
+                desc: "Redirección invisible del tráfico web mediante infección por malware o manipulación de memoria caché DNS. Escribes la dirección web real de tu banco pero el sistema te envía a un servidor duplicado.",
+                details: "Se previene verificando certificados criptográficos HTTPS válidos y evitando redes Wi-Fi públicas no protegidas."
+            },
+            {
+                id: "paquete",
+                category: "comercio",
+                title: "Fraude del 'Paquete Fantasma'",
+                icon: "📦",
+                badge: "Crecimiento +222%",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "Notificaciones falsas de paquetería (DHL, Mercado Libre, Amazon) exigiendo un pago mínimo por problemas de dirección o solicitando el código de 6 dígitos que llega a tu celular.",
+                details: "Ese código de 6 dígitos es el PIN de verificación para secuestrar tu cuenta de WhatsApp y extorsionar a tus contactos."
+            },
+            {
+                id: "devoluciones",
+                category: "comercio",
+                title: "Fraude de Devoluciones (E-Commerce)",
+                icon: "🔄",
+                badge: "Dirigido a Vendedores",
+                badgeColor: "bg-indigo-100 text-indigo-800",
+                desc: "Compradores malintencionados adquieren bienes de alto valor y solicitan reembolso alegando producto defectuoso, devolviendo cajas rellenas de piedras o jabón.",
+                details: "Afecta severamente a PyMES. Se combate mediante herramientas de análisis digital (SEON) y documentación en video del empaque."
+            },
+            {
+                id: "ponzi",
+                category: "financiero",
+                title: "Esquemas Ponzi y Criptoactivos",
+                icon: "📈",
+                badge: "Fraude Inversionista",
+                badgeColor: "bg-amber-100 text-amber-800",
+                desc: "Promesas de rendimientos irreales (ej. 9% mensual garantizado) operando con supuestas criptomonedas. Los rendimientos iniciales provienen únicamente del dinero de nuevos inversores.",
+                details: "Las criptomonedas son irreversibles por diseño. Antes de invertir, es obligatorio consultar el registro SIPRES de CONDUSEF."
+            },
+            {
+                id: "faas",
+                category: "avanzado",
+                title: "Fraude como Servicio (FaaS) & Telekopye",
+                icon: "🤖",
+                badge: "Crimen Organizado",
+                badgeColor: "bg-slate-200 text-slate-800",
+                desc: "Plataformas automatizadas que permiten a delincuentes sin conocimientos técnicos crear sitios de phishing hiperrealistas y falsificar recibos de depósito a través de bots de Telegram.",
+                details: "Sistemas como 'Telekopye' permiten a delincuentes operar campañas de estafas masivas con un solo clic."
+            },
+            {
+                id: "sinteticas",
+                category: "avanzado",
+                title: "Identidades Sintéticas",
+                icon: "🎭",
+                badge: "Ataque Silencioso",
+                badgeColor: "bg-slate-200 text-slate-800",
+                desc: "Creación de perfiles ficticios combinando datos reales filtrados (CURP/RFC) con nombres inventados. Cultivan crédito pagando puntualmente microcréditos hasta obtener líneas máximas y desaparecer.",
+                details: "Representa el vector de fraude con mayor crecimiento en instituciones financieras, burlando verificaciones tradicionales KYC."
+            },
+            {
+                id: "deepfakes",
+                category: "avanzado",
+                title: "Deepfakes e Inyección Biométrica",
+                icon: "👁️",
+                badge: "Riesgo de IA",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "Subversión de sistemas de reconocimiento facial mediante la inyección directa de video sintético en el flujo de software, eludiendo cámaras físicas y pruebas de vida sencillas.",
+                details: "Supera la norma ISO/IEC 30107-3 básica mediante ataques de inyección digital de software."
+            },
+            {
+                id: "simswapping",
+                category: "avanzado",
+                title: "SIM Swapping (Secuestro de Línea)",
+                icon: "📲",
+                badge: "Falla de Telecom",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "Duplicación no autorizada de la tarjeta SIM acudiendo a la telefónica con datos suplantados. La víctima pierde señal de inmediato y el delincuente recibe todos los códigos SMS bancarios.",
+                details: "Requiere transicionar prioritariamente de autenticación SMS hacia aplicaciones autenticadoras o llaves físicas FIDO2."
+            },
+            {
+                id: "montadeudas",
+                category: "comercio",
+                title: "Montadeudas (Gota a Gota Digital)",
+                icon: "📲",
+                badge: "Extorsión Móvil",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: "Apps de préstamos exprés que exigen permisos para leer tu agenda telefónica y fotos. Modifican unilateralmente tasas e inician acoso coercitivo y doxing a tus contactos.",
+                details: "Sancionado con 3 a 9 años de prisión en el Código Penal. Reportable de inmediato al 089."
+            }
+        ];
+
+        const quizQuestions = [
+            {
+                q: "1. Recibes un mensaje de SMS del 'Banco' alertando sobre un retiro no reconocido de $4,500 e incluyendo un enlace directo para cancelarlo. ¿Qué debes hacer?",
+                options: [
+                    { text: "Dar clic en el enlace inmediatamente para evitar que me cobren.", score: 0 },
+                    { text: "Ignorar el mensaje y el enlace, abrir la app bancaria oficial o llamar al número oficial en la tarjeta.", score: 2 },
+                    { text: "Responder al SMS pidiendo que hablen con un asesor.", score: 0 }
+                ]
+            },
+            {
+                q: "2. Una llamada telefónica de 'soporte bancario' te pide el código de 6 dígitos que acaba de llegar a tu celular para 'frenar un fraude en progreso'. ¿Qué representa ese código?",
+                options: [
+                    { text: "Es una clave de seguridad interna que el asesor necesita para ayudarme.", score: 0 },
+                    { text: "Es un código OTP/Token legítimo que autoriza la transferencia del delincuente o el acceso a tu cuenta.", score: 2 },
+                    { text: "Un comprobante digital sin riesgo.", score: 0 }
+                ]
+            },
+            {
+                q: "3. Vas a realizar una inversión en una plataforma digital que promete 8% de rendimiento mensual sin ningún riesgo. ¿Cuál es la primera acción de verificación?",
+                options: [
+                    { text: "Consultar si la empresa está debidamente registrada en el SIPRES de CONDUSEF.", score: 2 },
+                    { text: "Confiar porque vi anuncios patrocinados por figuras públicas en redes sociales.", score: 0 },
+                    { text: "Depositar un monto pequeño para probar si devuelven las ganancias.", score: 0 }
+                ]
+            },
+            {
+                q: "4. Tu teléfono móvil muestra repentinamente el estado 'Sin servicio' o 'Solo llamadas de emergencia' sin razón aparente en una zona con buena cobertura. ¿De qué podrías ser víctima?",
+                options: [
+                    { text: "Una falla temporal del proveedor telefónico únicamente.", score: 0 },
+                    { text: "Un posible ataque de SIM Swapping (secuestro de tu número de teléfono).", score: 2 },
+                    { text: "Infección por virus en la pantalla.", score: 0 }
+                ]
+            },
+            {
+                q: "5. Si eres víctima de una transferencia no reconocida en tu banca en línea (SPEI) y demandas la nulidad, ¿sobre quién recae la carga de la prueba según la SCJN?",
+                options: [
+                    { text: "Sobre mí como usuario, teniendo que pagar peritos informáticos.", score: 0 },
+                    { text: "Sobre la institución bancaria, quien debe probar la fiabilidad e invulnerabilidad de su sistema.", score: 2 },
+                    { text: "Sobre la compañía de internet que contraté.", score: 0 }
+                ]
+            }
+        ];
+
+        let quizScores = Array(quizQuestions.length).fill(0);
+
+        // Initialize Charts and UI components on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initDemographicsChart();
+            initChargebackChart();
+            selectPrinciple('urgencia');
+            renderThreats('all');
+            renderQuiz();
+            initScrollAnimations(); // Iniciar animaciones de JS
+        });
+
+        // --- MÓDULO DE ANIMACIONES CON JAVASCRIPT ---
+        function initScrollAnimations() {
+            // 1. Agregar clase de ocultamiento inicial dinámicamente a los contenedores
+            const elementsToAnimate = document.querySelectorAll(`
+                section > div.bg-gradient-to-r, 
+                section > div.bg-gradient-to-br,
+                section > div.bg-white, 
+                .grid > div.bg-white, 
+                #wizard-buttons > button, 
+                #denuncia .grid > div
+            `);
+            
+            elementsToAnimate.forEach(el => {
+                if(!el.classList.contains('js-reveal')) {
+                    el.classList.add('js-reveal');
+                }
+                el.classList.add('reveal-hidden');
+            });
+
+            // 2. Configurar Intersection Observer con retraso escalonado (Stagger effect)
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                let delayCounter = 0; 
+                
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.remove('reveal-hidden');
+                            entry.target.classList.add('reveal-visible');
+                            
+                            // Disparar animación de contador si hay números dentro
+                            const numberElements = entry.target.querySelectorAll('.js-number');
+                            numberElements.forEach(animateValue);
+                            
+                        }, delayCounter * 120); // 120ms de separación entre tarjetas simultáneas
+                        
+                        delayCounter++;
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            // Observar todos los elementos designados
+            document.querySelectorAll('.js-reveal').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // 3. Función para animar contadores numéricos de manera fluida
+        function animateValue(obj) {
+            const target = parseFloat(obj.getAttribute('data-target'));
+            const isDecimal = parseInt(obj.getAttribute('data-decimals')) > 0;
+            const duration = 2000; 
+            let startTimestamp = null;
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                
+                // Función Ease-Out para que el contador frene suavemente al acercarse al final
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                let currentVal = easeProgress * target;
+                
+                if (isDecimal) {
+                    obj.innerHTML = currentVal.toFixed(1);
+                } else {
+                    obj.innerHTML = Math.floor(currentVal).toLocaleString();
+                }
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.innerHTML = isDecimal ? target.toFixed(1) : target.toLocaleString();
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        // --- FIN MÓDULO ANIMACIONES ---
+
+        // Chart 1: Demographics
+        function initDemographicsChart() {
+            const ctx = document.getElementById('demographicsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['18 - 29 años', '30 - 39 años', '40 - 49 años', '50 - 59 años', '60+ años'],
+                    datasets: [{
+                        label: ' Crecimiento en Reclamaciones (% vs periodo previo)',
+                        data: [20, 18, 22, 25, 8],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#6366f1',
+                            '#2563eb',
+                            '#1d4ed8',
+                            '#94a3b8'
+                        ],
+                        borderRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Increm. de denuncias: +${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return '+' + value + '%'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart 2: Chargeback
+        function initChargebackChart() {
+            const ctx = document.getElementById('chargebackChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2019', '2020', '2021', '2022', '2023'],
+                    datasets: [
+                        {
+                            label: 'Compras Autorizadas (MDP)',
+                            data: [246037, 353101, 500171, 609581, 802747],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Contracargos (MDP)',
+                            data: [2688, 3348, 2872, 3330, 3366],
+                            borderColor: '#f43f5e',
+                            backgroundColor: '#f43f5e',
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Compras (MDP)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Contracargos (MDP)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Principle Interaction
+        function selectPrinciple(key) {
+            const data = principlesData[key];
+            if(!data) return;
+
+            // Highlight buttons
+            document.querySelectorAll('.principle-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-100/60', 'backdrop-blur-md', 'border-cyan-300', 'text-cyan-900', 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]');
+                btn.classList.add('border-slate-200');
+            });
+            const selectedBtn = document.getElementById(`btn-${key}`);
+            if(selectedBtn) {
+                selectedBtn.classList.remove('border-slate-200');
+                selectedBtn.classList.add('bg-cyan-100/60', 'backdrop-blur-md', 'border-cyan-300', 'text-cyan-900', 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]');
+            }
+
+            // Render Detail Panel
+            const box = document.getElementById('principle-detail-box');
+            box.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-3xl">${data.icon}</span>
+                        <div>
+                            <h3 class="font-extrabold text-slate-900 text-xl">${data.title}</h3>
+                            <span class="text-xs font-semibold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-sm">Mecanismo de Explotación</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-slate-700 leading-relaxed">${data.desc}</p>
+                    
+                    <div class="p-4 bg-white rounded-sm border border-slate-200 space-y-1">
+                        <span class="text-xs font-bold text-rose-600 uppercase tracking-wide">Ejemplo Práctico de Fraude:</span>
+                        <p class="text-xs text-slate-600 italic">"${data.example}"</p>
+                    </div>
+
+                    <div class="p-4 bg-emerald-50 rounded-sm border border-emerald-200 space-y-1">
+                        <span class="text-xs font-bold text-emerald-800 uppercase tracking-wide">🛡️ Regla de Prevención:</span>
+                        <p class="text-xs text-emerald-900 font-medium">${data.prevention}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Threat Filtering
+        function filterThreats(category) {
+            // Update filter button styling
+            document.querySelectorAll('.threat-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-cyan-100/60', 'backdrop-blur-md', 'border-cyan-300', 'text-cyan-900', 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]');
+                btn.classList.add('bg-white', 'text-slate-700', 'hover:bg-slate-100', 'border', 'border-slate-200');
+            });
+            event.currentTarget.classList.remove('bg-white', 'text-slate-700', 'hover:bg-slate-100', 'border-slate-200');
+            event.currentTarget.classList.add('bg-cyan-100/60', 'backdrop-blur-md', 'border-cyan-300', 'text-cyan-900', 'shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)]');
+
+            renderThreats(category);
+        }
+
+        function renderThreats(category) {
+            const grid = document.getElementById('threats-grid');
+            grid.innerHTML = '';
+
+            const filtered = category === 'all' 
+                ? threatsData 
+                : threatsData.filter(t => t.category === category);
+
+            filtered.forEach((item, index) => {
+                const card = document.createElement('div');
+                // Agregamos clases de animación al crear la tarjeta dinámicamente
+                card.className = "bg-white p-6 rounded-sm border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-4 reveal-hidden";
+                
+                // Efecto escalonado (stagger) de aparición al filtrar categorías
+                setTimeout(() => {
+                    card.classList.remove('reveal-hidden');
+                    card.classList.add('reveal-visible');
+                }, index * 80); 
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl">${item.icon}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-sm ${item.badgeColor}">${item.badge}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-lg">${item.title}</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">${item.desc}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100">
+                        <p class="text-[11px] text-slate-500 font-medium"><strong class="text-slate-700">Detalle clave:</strong> ${item.details}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Wizard Interactive Logic
+        function runWizard(type) {
+            const out = document.getElementById('wizard-output');
+            out.classList.remove('hidden');
+
+            let title = "";
+            let steps = [];
+
+            if(type === 'banco') {
+                title = "Acción Inmediata: Cargo o Transferencia No Reconocida";
+                steps = [
+                    "<strong>1. Bloqueo Inmediato:</strong> Ingresa a la app de tu banco y apaga/bloquea tus tarjetas físicas y virtuales.",
+                    "<strong>2. Contacta a Línea Directa del Banco:</strong> Llama únicamente al número telefónico grabado al reverso de tu tarjeta de plástico oficial.",
+                    "<strong>3. Exige Folio de Reclamación:</strong> Solicita la aclaración por 'cargo no reconocido' o 'transferencia no autorizada'. La jurisprudencia SCJN obliga al banco a asumir la carga de la prueba.",
+                    "<strong>4. Revisa Comprobante CEP:</strong> Si te realizaron una venta falsa, verifica la clave de rastreo en el portal CEP de Banxico para confirmar si el dinero realmente salió o entró."
+                ];
+            } else if(type === 'sim') {
+                title = "Acción Inmediata: Pérdida Repentina de Señal Celular (Posible SIM Swapping)";
+                steps = [
+                    "<strong>1. Contacto Urgente a la Telefónica:</strong> Desde otro teléfono, llama inmediatamente a tu compañía celular (Telcel, AT&T, Movistar) y reporta la suspensión no autorizada.",
+                    "<strong>2. Desvincula Apps Bancarias y WhatsApp:</strong> Inicia sesión en tus correos desde una computadora y cambia la contraseña, cerrando sesiones en todos los dispositivos.",
+                    "<strong>3. Transiciona a Apps de Autenticación:</strong> Configura 2FA mediante Google Authenticator o llaves físicas FIDO2, eliminando el SMS como método de recuperación.",
+                    "<strong>4. Denuncia por SIM Swapping:</strong> Acude a la Policía Cibernética (088 / 089) para registrar el incidente."
+                ];
+            } else if(type === 'montadeudas') {
+                title = "Acción Inmediata: Cobranza Coercitiva y Extorsión de Montadeudas";
+                steps = [
+                    "<strong>1. No Realices Más Pagos:</strong> Los extrorsionadores continuarán exigiendo dinero aunque pagues el monto inicial.",
+                    "<strong>2. Revoca Permisos de la App:</strong> Desinstala la aplicación e ingresa a la configuración de tu teléfono para eliminar permisos de contactos, cámara y almacenamiento.",
+                    "<strong>3. Notifica a tus Contactos:</strong> Publica un aviso breve: 'Mi agenda telefónica fue vulnerada por una app fraudulenta. Ignoren cualquier mensaje de cobranza a mi nombre'.",
+                    "<strong>4. Denuncia al 089:</strong> Realiza la denuncia anónima al 089 o Policía Cibernética. La extorsión con deudas ficticias está sancionada con hasta 9 años de prisión."
+                ];
+            } else if(type === 'whatsapp') {
+                title = "Acción Inmediata: Hackeo / Secuestro de Cuenta de WhatsApp";
+                steps = [
+                    "<strong>1. Reinstala WhatsApp:</strong> Inicia sesión en la app con tu número. Al ingresar el nuevo código SMS de 6 dígitos, la sesión del atacante se cerrará automáticamente.",
+                    "<strong>2. Activa el PIN de Verificación en 2 Pasos:</strong> Ve a Ajustes > Cuenta > Verificación en dos pasos e ingresa un PIN de 6 dígitos memorizable.",
+                    "<strong>3. Notifica a tus Círculos Cercanos:</strong> Llama por teléfono tradicional a tus familiares para advertirles que no realicen transferencias de emergencia.",
+                    "<strong>4. Reporte a Soporte:</strong> Envía un correo a support@whatsapp.com con el asunto 'Cuenta robada/suspendida' y tu número en formato internacional (+52)."
+                ];
+            }
+
+            out.innerHTML = `
+                <h4 class="font-bold text-slate-900 text-lg flex items-center space-x-2">
+                    <span>⚡</span>
+                    <span>${title}</span>
+                </h4>
+                <ul class="space-y-2 text-xs sm:text-sm text-slate-700 border-t border-slate-200 pt-3">
+                    ${steps.map(s => `<li class="flex items-start space-x-2"><span class="text-brand-600 font-bold">➔</span><span>${s}</span></li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Quiz Logic
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestions.forEach((item, qIdx) => {
+                const qBox = document.createElement('div');
+                qBox.className = "p-5 border border-slate-200 rounded-sm bg-slate-50 space-y-3";
+                
+                let optionsHTML = item.options.map((opt, oIdx) => `
+                    <label class="flex items-center space-x-3 p-3 bg-white rounded-sm border border-slate-200 cursor-pointer hover:border-brand-400 transition text-xs sm:text-sm text-slate-700">
+                        <input type="radio" name="question-${qIdx}" value="${opt.score}" onchange="updateQuizScore(${qIdx}, ${opt.score})" class="text-brand-600 focus:ring-brand-500">
+                        <span>${opt.text}</span>
+                    </label>
+                `).join('');
+
+                qBox.innerHTML = `
+                    <p class="font-bold text-slate-900 text-sm sm:text-base">${item.q}</p>
+                    <div class="space-y-2">${optionsHTML}</div>
+                `;
+                container.appendChild(qBox);
+            });
+
+            // Add Submit Button
+            const submitBtn = document.createElement('button');
+            submitBtn.className = "w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-sm shadow-md transition text-sm";
+            submitBtn.innerText = "Obtener Diagnóstico de Madurez Digital";
+            submitBtn.onclick = evaluateQuiz;
+            container.appendChild(submitBtn);
+
+            // Result Box
+            const resultBox = document.createElement('div');
+            resultBox.id = "quiz-result-box";
+            resultBox.className = "hidden p-6 rounded-sm border space-y-3";
+            container.appendChild(resultBox);
+        }
+
+        function updateQuizScore(qIdx, score) {
+            quizScores[qIdx] = score;
+        }
+
+        function evaluateQuiz() {
+            const total = quizScores.reduce((a, b) => a + b, 0);
+            const resultBox = document.getElementById('quiz-result-box');
+            resultBox.classList.remove('hidden');
+
+            if(total >= 8) {
+                resultBox.className = "p-6 rounded-sm border border-emerald-200 bg-emerald-50 text-emerald-900 space-y-2";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-lg">
+                        <span>🛡️</span>
+                        <span>Nivel de Riesgo: ALTO BLINDAJE DIGITAL (${total}/10 pts)</span>
+                    </div>
+                    <p class="text-xs sm:text-sm">¡Felicidades! Demuestras un conocimiento sólido sobre la psicología del engaño, los canales de verificación oficial y tus derechos legales. Mantén activada la autenticación en dos pasos y el escepticismo digital.</p>
+                `;
+            } else if(total >= 4) {
+                resultBox.className = "p-6 rounded-sm border border-amber-200 bg-amber-50 text-amber-900 space-y-2";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-lg">
+                        <span>⚠️</span>
+                        <span>Nivel de Riesgo: VULNERABILIDAD MODERADA (${total}/10 pts)</span>
+                    </div>
+                    <p class="text-xs sm:text-sm">Posees nociones básicas pero aún podrías ser vulnerable a ataques avanzados como Vishing de voz o suplantación de identidad por SIM Swapping. Revisa la sección de Catálogo de Amenazas y Blindaje Técnico.</p>
+                `;
+            } else {
+                resultBox.className = "p-6 rounded-sm border border-rose-200 bg-rose-50 text-rose-900 space-y-2";
+                resultBox.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-lg">
+                        <span>🚨</span>
+                        <span>Nivel de Riesgo: ALTA VULNERABILIDAD (${total}/10 pts)</span>
+                    </div>
+                    <p class="text-xs sm:text-sm">Tus respuestas indican un alto riesgo de caer en fraudes cibernéticos por confiar en llamadas entrantes o enlaces no verificados. Te sugerimos repasar detenidamente los principios de Ingeniería Social y memorizar la Línea 089 / 088.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
